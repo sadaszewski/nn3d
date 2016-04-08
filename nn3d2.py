@@ -192,6 +192,8 @@ def nn3d(pts, values,
 				}
 			}
 			
+			if (minIdx == -1) return 0;
+			
 			return flat_g + minIdx * 4;
 		}
 		
@@ -220,16 +222,18 @@ def nn3d(pts, values,
 						new_best = closestPoint(p, pt);
 					}
 					
-					dist = sqrt(pow(new_best[0] - pt[0], 2) +
-						pow(new_best[1] - pt[1], 2) +
-						pow(new_best[2] - pt[2], 2));
+					if (new_best) {
+						dist = sqrt(pow(new_best[0] - pt[0], 2) +
+							pow(new_best[1] - pt[1], 2) +
+							pow(new_best[2] - pt[2], 2));
 						
-					if (current_best == 0 || dist < best_dist) {
-						current_best = new_best;
-						best_dist = dist;
+						if (current_best == 0 || dist < best_dist) {
+							current_best = new_best;
+							best_dist = dist;
+						}
 					}
 						
-					if (dist + pt[ax] > split && crossBorder == 0) {
+					if ((new_best == 0 || dist + pt[ax] > split) && crossBorder == 0) {
 						crossBorder = 1;
 					} else {
 						return current_best;
@@ -252,16 +256,18 @@ def nn3d(pts, values,
 						new_best = closestPoint(p, pt);
 					}
 					
-					dist = sqrt(pow(new_best[0] - pt[0], 2) +
-						pow(new_best[1] - pt[1], 2) +
-						pow(new_best[2] - pt[2], 2));
-						
-					if (current_best == 0 || dist < best_dist) {
-						current_best = new_best;
-						best_dist = dist;
+					if (new_best != 0) {
+						dist = sqrt(pow(new_best[0] - pt[0], 2) +
+							pow(new_best[1] - pt[1], 2) +
+							pow(new_best[2] - pt[2], 2));
+							
+						if (current_best == 0 || dist < best_dist) {
+							current_best = new_best;
+							best_dist = dist;
+						}
 					}
 						
-					if (pt[ax] - dist <= split && crossBorder == 0) {
+					if ((new_best == 0 || pt[ax] - dist <= split) && crossBorder == 0) {
 						crossBorder = -1;
 						p = flat_g + 6;
 					} else {
@@ -379,6 +385,6 @@ def nn3d(pts, values,
 	
 	print 'Total time:', time.time() - t0, 's'
 	
-	return (accum, cnt)
+	return (accum, cnt, val, radius)
 
 	# return out
